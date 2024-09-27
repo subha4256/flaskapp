@@ -48,8 +48,8 @@ jobs:
       # Step 7: Update the deployment.yml file with the new image tag (build ID)
       - name: Update deployment file
         run: |
-          cd argocd-config
-          sed -i "s|azuresubha/092024python:.*|azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }}|g" path/to/deploy.yml
+          
+          sed -i "s|azuresubha/092024python:.*|azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }}|g" deploy.yml
 
       # Step 8: Commit and push the changes to the second repository
       - name: Commit and push changes
