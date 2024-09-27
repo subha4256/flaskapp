@@ -36,7 +36,7 @@ jobs:
       - name: Push Docker image
         run: |
           docker push azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }}
-          docker push azuresubha/092024python:latest
+          
 
       # Step 6: Clone the second repository (where the deploy.yml resides)
       - name: Clone the second repository
@@ -57,7 +57,7 @@ jobs:
           cd second-repo
           git config --global user.name "subha4256"
           git config --global user.email "subha4256@gmail.com"
-          git add path/to/deploy.yml
+          git add deploy.yml
           git commit -m "Update deployment image to azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }}"
           git push
         env:
