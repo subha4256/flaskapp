@@ -1,0 +1,64 @@
+name: Build and Deploy Docker Image
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Docker and log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}  # Docker Hub username stored in GitHub secrets
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}  # Docker Hub password stored in GitHub secrets
+
+      # Step 3: Get Build ID (GitHub's run number)
+      - name: Get Build ID
+        id: get_build_id
+        run: echo "::set-output name=build_id::${{ github.run_number }}"
+
+      # Step 4: Build and tag Docker image with the build ID
+      - name: Build and tag Docker image
+        run: |
+          docker build -t azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }} .
+          docker tag azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }} azuresubha/092024python:latest
+
+      # Step 5: Push the Docker image to Docker Hub
+      - name: Push Docker image
+        run: |
+          docker push azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }}
+          docker push azuresubha/092024python:latest
+
+      # Step 6: Clone the second repository (where the deploy.yml resides)
+      - name: Clone the second repository
+        run: |
+          git clone https://github.com/subha4256/argocd-config.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Add a GitHub Token for authentication
+
+      # Step 7: Update the deployment.yml file with the new image tag (build ID)
+      - name: Update deployment file
+        run: |
+          cd argocd-config
+          sed -i "s|azuresubha/092024python:.*|azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }}|g" path/to/deploy.yml
+
+      # Step 8: Commit and push the changes to the second repository
+      - name: Commit and push changes
+        run: |
+          cd second-repo
+          git config --global user.name "subha4256"
+          git config --global user.email "subha4256@gmail.com"
+          git add path/to/deploy.yml
+          git commit -m "Update deployment image to azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }}"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure this token has push access to the second repo
