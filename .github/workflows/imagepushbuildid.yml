@@ -50,12 +50,18 @@ jobs:
           cd argocd-config  # Navigate to the cloned repo directory
           sed -i "s|azuresubha/092024python:.*|azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }}|g" ./deploy.yml
 
-      # Step 8: Commit and push the changes to the second repository
-      - name: Commit and push changes
+      # Step 8: Configure Git to use the GitHub token for authentication
+      - name: Set up GitHub token for pushing
         run: |
-          cd argocd-config  # Ensure you're in the correct directory
+          cd argocd-config
           git config --global user.name "subha4256"
           git config --global user.email "subha4256@gmail.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/subha4256/argocd-config.git
+          
+      # Step 9: Commit and push changes
+      - name: Commit and push changes
+        run: |
+          cd argocd-config
           git add deploy.yml
           git commit -m "Update deployment image to azuresubha/092024python:${{ steps.get_build_id.outputs.build_id }}"
           git push
