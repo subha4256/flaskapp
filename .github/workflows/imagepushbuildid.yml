@@ -42,7 +42,7 @@ jobs:
         run: |
           git clone https://github.com/subha4256/argocd-config.git
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Add a GitHub Token for authentication
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}  # Add a GitHub Token for authentication
 
       # Step 7: Update the deploy.yml file with the new image tag (build ID)
       - name: Update deployment file
@@ -56,7 +56,7 @@ jobs:
           cd argocd-config
           git config --global user.name "subha4256"
           git config --global user.email "subha4256@gmail.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/subha4256/argocd-config.git
+          git remote set-url origin https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/subha4256/argocd-config.git
           
       # Step 9: Commit and push changes
       - name: Commit and push changes
