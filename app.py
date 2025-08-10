@@ -1,10 +1,11 @@
-from flask import Flask
+from fastapi import FastAPI
 
-app = Flask(__name__)
+app = FastAPI()
 
-@app.route('/')
-def hello():
-    return 'Hello, amplo'
+@app.get("/")
+def read_root():
+    return {"message": "Hello from FastAPI Amplo!"}
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+@app.get("/items/{item_id}")
+def read_item(item_id: int, q: str = None):
+    return {"item_id": item_id, "query": q}
